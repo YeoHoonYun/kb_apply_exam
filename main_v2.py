@@ -17,7 +17,6 @@
 # 2. 아래 문서 이미지에서 테이블 구조 (영역) 을 인지하고 구조간 관계를 설명할 수 있는 프로그램을 구현합니다.
 # 예) 시각-1-아이가 눈을 잘 맞춥니까?-예
 
-# conda install -c conda-forge poppler
 # pip install pdf2image
 import glob
 import cv2
@@ -32,7 +31,7 @@ def read_img(path):
     return img.reshape(1, -1)[0]
 
 # 1-1)금융거래목적확인서.pdf
-images = sorted(glob.glob('augumentation/0/*.jpg'))
+images = sorted(glob.glob('augmentation/0/*.jpg'))
 data = [read_img(x) for x in images]
 target = [x.split("_")[-1][0] for x in images]
 print("데이터 예시 : ",data)
@@ -64,7 +63,7 @@ print("accuracy : ", accuracy_score(y_test, y_pred))
 # print('Micro average f1-score : ', f1_score(y_test, y_pred, average='micro'))
 print()
 
-images = sorted(glob.glob('augumentation/1/*.jpg'))
+images = sorted(glob.glob('augmentation/1/*.jpg'))
 data = [read_img(x) for x in images]
 target = [x.split("_")[-1][0] for x in images]
 
@@ -88,7 +87,7 @@ print("accuracy : ", accuracy_score(y_test, y_pred))
 # print('Micro average f1-score : ', f1_score(y_test, y_pred, average='micro'))
 print()
 
-images = sorted(glob.glob('augumentation/2/*.jpg'))
+images = sorted(glob.glob('augmentation/2/*.jpg'))
 data = [read_img(x) for x in images]
 target = [x.split("_")[-1][0] for x in images]
 
@@ -119,7 +118,7 @@ print("accuracy : ", accuracy_score(y_test, y_pred))
 # print('Micro average f1-score : ', f1_score(y_test, y_pred, average='micro'))
 print()
 
-images = sorted(glob.glob('augumentation/3/*.jpg'))
+images = sorted(glob.glob('augmentation/3/*.jpg'))
 data = [read_img(x) for x in images]
 target = [x.split("_")[-1][0] for x in images]
 

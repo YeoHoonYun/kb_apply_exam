@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import cv2
 import glob
 import random
-# 출처: https://hagler.tistory.com/189 [Hagler's Blog:티스토리]
 
 def fill(img, h, w):
     img = cv2.resize(img, (h, w), cv2.INTER_CUBIC)
@@ -47,72 +46,46 @@ def horizontal_shift(img, ratio=0.0):
     img = fill(img, h, w)
     return img
 
+def create_augment(aug, dir, images, target, dsize):
+    for index, fname in enumerate(images):
+        print(fname)
+        i = 0
+        while (i < aug):
+            img = cv2.imread(fname)
+            img = cv2.resize(img, dsize=dsize, interpolation=cv2.INTER_LINEAR)
+            img = horizontal_shift(img, 0.1)
+            img = vertical_shift_down(img, 0.1)
+            img = vertical_shift_up(img, 0.1)
+            file_name = "%s/%s_%s_%s" % (dir, index, i, str(target[index]) + '.jpg')
+            cv2.imwrite(file_name, img)
+            i = i + 1
+
 aug = 100
 
-dir = 'augumentation/0/'
+dir = 'augmentation/0/'
 images = sorted(glob.glob('result/0/*.jpg'))
 target = [0,1,0,0,0]
+dsize = (40, 135)
 
-for index,fname in enumerate(images):
-    print(fname)
-    i = 0
-    while(i<aug):
-        img = cv2.imread(fname)
-        img = cv2.resize(img, dsize=(40, 135),interpolation=cv2.INTER_LINEAR)
-        img = horizontal_shift(img, 0.1)
-        img = vertical_shift_down(img, 0.1)
-        img = vertical_shift_up(img, 0.1)
-        file_name = "%s/%s_%s_%s" % (dir, index, i, str(target[index]) + '.jpg')
-        cv2.imwrite(file_name, img)
-        i = i + 1
+create_augment(aug, dir, images, target, dsize)
 
-dir = 'augumentation/1/'
+dir = 'augmentation/1/'
 images = sorted(glob.glob('result/1/*.jpg'))
 target = [0,0,0,0,0,0,1,0,1,0]
+dsize = (50, 135)
 
-for index,fname in enumerate(images):
-    print(fname)
-    i = 0
-    while(i<aug):
-        img = cv2.imread(fname)
-        img = cv2.resize(img, dsize=(50, 135),interpolation=cv2.INTER_LINEAR)
-        img = horizontal_shift(img, 0.1)
-        img = vertical_shift_down(img, 0.1)
-        img = vertical_shift_up(img, 0.1)
-        file_name = "%s/%s_%s_%s" % (dir, index, i, str(target[index]) + '.jpg')
-        cv2.imwrite(file_name, img)
-        i = i + 1
+create_augment(aug, dir, images, target, dsize)
 
-dir = 'augumentation/2/'
+dir = 'augmentation/2/'
 images = sorted(glob.glob('result/2/*.jpg'))
 target = [1,2,1,0,0,0]
+dsize = (100, 100)
 
-for index,fname in enumerate(images):
-    print(fname)
-    i = 0
-    while(i<aug):
-        img = cv2.imread(fname)
-        img = cv2.resize(img, dsize=(100, 100),interpolation=cv2.INTER_LINEAR)
-        img = horizontal_shift(img, 0.1)
-        img = vertical_shift_down(img, 0.1)
-        img = vertical_shift_up(img, 0.1)
-        file_name = "%s/%s_%s_%s" % (dir, index, i, str(target[index]) + '.jpg')
-        cv2.imwrite(file_name, img)
-        i = i + 1
+create_augment(aug, dir, images, target, dsize)
 
-dir = 'augumentation/3/'
+dir = 'augmentation/3/'
 images = sorted(glob.glob('result/3/*.jpg'))
 target = [1,0,1,0,1,0,1,0]
+dsize = (100, 155)
 
-for index,fname in enumerate(images):
-    print(fname)
-    i = 0
-    while(i<aug):
-        img = cv2.imread(fname)
-        img = cv2.resize(img, dsize=(100, 155),interpolation=cv2.INTER_LINEAR)
-        img = horizontal_shift(img, 0.1)
-        img = vertical_shift_down(img, 0.1)
-        img = vertical_shift_up(img, 0.1)
-        file_name = "%s/%s_%s_%s" % (dir, index, i, str(target[index]) + '.jpg')
-        cv2.imwrite(file_name, img)
-        i = i + 1
+create_augment(aug, dir, images, target, dsize)
