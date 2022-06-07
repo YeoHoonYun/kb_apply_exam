@@ -13,30 +13,60 @@ from pdf2image import convert_from_path
 import cv2, numpy
 
 images = convert_from_path("data\\03. OCR\\1.pdf")
+# 처리한 이미지를 흑백으로 전환
 img = cv2.cvtColor(numpy.array(images[0]), cv2.COLOR_BGR2GRAY)
+# 이미지를 작은 영역별로 Thresholding
+# cv2.ADAPTIVE_THRESH_MEAN_C : 주변영역의 평균값으로 결정
+# threshold type
+# blockSize – thresholding을 적용할 영역 사이즈
+# C – 평균이나 가중평균에서 차감할 값
 img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 15, 5)
 
+# 고정된 임계값을 설정하고 결과 출력
+# src – input image로 single-channel 이미지.(grayscale 이미지)
+# thresh – 임계값
+# maxval – 임계값을 넘었을 때 적용할 value
+# type – thresholding type
 thresh, img_bin = cv2.threshold(img,128,255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 img_bin = 255-img_bin
 kernel_len = np.array(img).shape[1]//100
 
+# 수직
 ver_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, kernel_len))
+# 수평
 hor_kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_len, 1))
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
 
+# 특정 구조화 요소를 사용하여 이미지를 침식
+# iterations 침식을 반복할 횟수 지정
 image_1 = cv2.erode(img_bin, ver_kernel, iterations=2)
+# 특정 구조화 요소를 사용해서 이미지를 팽창
+# iterations 팽창을 반복할 횟수 지정
 vertical_lines = cv2.dilate(image_1, ver_kernel, iterations=2)
 
 image_2 = cv2.erode(img_bin, hor_kernel, iterations=2)
 horizontal_lines = cv2.dilate(image_2, hor_kernel, iterations=2)
 
+# cv2.addWeighted 가중치 합, 평균 연산
 img_vh = cv2.addWeighted(vertical_lines, 0.5, horizontal_lines, 0.5, 0.0)
+# iterations 침식을 반복할 횟수 지정
 img_vh = cv2.erode(~img_vh, kernel, iterations=2)
+# 고정된 임계값을 설정하고 결과 출력
+# src – input image로 single-channel 이미지.(grayscale 이미지)
+# thresh – 임계값
+# maxval – 임계값을 넘었을 때 적용할 value
+# type – thresholding type
 thresh, img_vh = cv2.threshold(img_vh,128,255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
-bitxor = cv2.bitwise_xor(img,img_vh)
-bitnot = cv2.bitwise_not(bitxor)
+#비트 연산 xor, not
+# bitxor = cv2.bitwise_xor(img,img_vh)
+# bitnot = cv2.bitwise_not(bitxor)
 
+# 외곽선 정보 검출
+# image, mode, method
+# image: 입력 영상. non-zero 픽셀을 객체로 간주함.
+# mode: 외곽선 검출 모드. cv2.RETR_로 시작하는 상수. RETR_TREE 계층형 데이터 출력
+# method: 외곽선 근사화 방법. cv2.CHAIN_APPROX_로 시작하는 상수.
 contours, hierarchy = cv2.findContours(img_vh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
 def sort_contours(cnts, method="left-to-right"):
@@ -51,6 +81,7 @@ def sort_contours(cnts, method="left-to-right"):
     key=lambda b:b[1][i], reverse=reverse))
     return (cnts, boundingBoxes)
 
+# 검출된 윤곽선들을 소팅함.
 contours, boundingBoxes = sort_contours(contours, "top-to-bottom")
 heights = [boundingBoxes[i][3] for i in range(len(boundingBoxes))]
 mean = np.mean(heights)
@@ -62,6 +93,7 @@ third_box = []
 forth_box = []
 
 for c in contours:
+    # contour의 외접하는 똑바로 세워진 사각형의 좌표를 얻음.
     x, y, w, h = cv2.boundingRect(c)
     box.append([x, y, w, h])
 
